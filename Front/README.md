@@ -64,6 +64,7 @@ Puis allez à l'adresse : `http://127.0.0.1:8080/`
 ```
 $ npm run test
 ```
+Lancer Tests : jest src/__tests__/your_test_file.js
 
 ## Comment lancer un seul test ?
 

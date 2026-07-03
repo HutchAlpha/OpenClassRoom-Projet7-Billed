@@ -1,6 +1,9 @@
+Lancer les test : npm run test
+
+
 # Problème connexion Admin
 
-Avant
+## Avant
   const user = {
     type: "Admin",
     email: e.target.querySelector(`input[data-testid="  //employee//  -email-input"]`).value,
@@ -8,7 +11,7 @@ Avant
     status: "connected"
   }
 
-Après
+##  Après
   const user = {
     type: "Admin",
     email: e.target.querySelector(`input[data-testid="admin-email-input"]`).value,
@@ -17,3 +20,6 @@ Après
   }
 
 Emplyee a été mis au lieu de user donc type été a null a cause de cela
+
+
+# Images trop grande par rapport a l'affichages

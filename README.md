@@ -12,3 +12,7 @@ npm run run:dev
 cd Front
 live-server
 npm run test
+
+## Lancer les Test
+(être dans le Front)
+npm run test
