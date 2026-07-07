@@ -6,10 +6,12 @@ Instaler les différents dépendances , voir les readme.md Back + Front
 
 ## BACK ##
 cd Back
+nvm use 18.16.1
 npm run run:dev
 
 ## Front ##
 cd Front
+nvm use 18.16.1
 live-server
 npm run test
 
