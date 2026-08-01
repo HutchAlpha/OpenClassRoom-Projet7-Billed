@@ -36,12 +36,12 @@ const handleClickIconEye = (icon, document) => {
   const modaleFile = document.querySelector('#modaleFile')
   const modal = new bootstrap.Modal(modaleFile)
 
-  // Attendre que la modale soit visible pour calculer la largeur
   modaleFile.addEventListener('shown.bs.modal', () => {
-    const imgWidth = Math.floor(modaleFile.getBoundingClientRect().width * 0.5)
-    modaleFile.querySelector(".modal-body").innerHTML =
-      `<div style='text-align: center;' class="bill-proof-container">
-        <img width=${imgWidth} src=${billUrl} alt="Bill" />
+    const modalBody = modaleFile.querySelector(".modal-body")
+    modalBody.innerHTML =
+      `<div style="text-align: center;" class="bill-proof-container">
+        <img src="${billUrl}" alt="Bill"
+          style="max-width: 100%; max-height: 80vh; height: auto; object-fit: contain;" />
       </div>`
   }, { once: true })
 
