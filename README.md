@@ -20,15 +20,38 @@ npm run test
 npm run test
 
 ----------------------------
-
-
-### administrateur : 
-```
-utilisateur : admin@test.tld 
-mot de passe : admin
-```
 ### employé :
 ```
 utilisateur : employee@test.tld
 mot de passe : employee
 ```
+### administrateur : 
+```
+utilisateur : admin@test.tld 
+mot de passe : admin
+```
+
+
+----------------------------
+
+## Organisation FRONT
+
+Fixtures [DONNEEMOCK]
+- bills
+
+Bills (facture) [SALARIE]
+- bills
+- billsUI (TABLEAU NOTE DE FRAIS)
+
+DashBoard [RH-ADMIN]
+- Dashboard
+- DashboardFormUI (Formulaire Edition Facture)
+- DashBoardUI (Pending, Accepted, Refused)
+
+LOGIN
+| Login
+| LoginUI (Formulaire connexion User / RH-Admin)
+
+NewBill
+| NewBill
+| NewBillUI (Formulaire création note de Frais)

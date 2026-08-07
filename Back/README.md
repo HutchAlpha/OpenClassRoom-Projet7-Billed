@@ -51,15 +51,15 @@ L'api est accessible sur le port `5678` en local, c'est à dire `http://localhos
 
 ## Utilisateurs par défaut:
 
-### administrateur : 
-```
-utilisateur : admin@test.tld 
-mot de passe : admin
-```
 ### employé :
 ```
 utilisateur : employee@test.tld
 mot de passe : employee
+```
+### administrateur : 
+```
+utilisateur : admin@test.tld 
+mot de passe : admin
 ```
 
 
@@ -95,13 +95,13 @@ npm run:dev
 
 The API is locally available on port `5678`, go to `http://localhost:5678`
 
-### administrateur : 
-```
-utilisateur : admin@company.tld 
-mot de passe : admin
-```
 ### employé :
 ```
 utilisateur : employee@company.tld
 mot de passe : employee
+```
+### administrateur : 
+```
+utilisateur : admin@company.tld 
+mot de passe : admin
 ```
