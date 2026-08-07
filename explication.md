@@ -168,3 +168,70 @@ const rows = (data) => {
 Les bills s'affichaient dans l'ordre des fixtures, sans tri. 
 
 Problémes, le test vérifiait que les dates étaient triées du plus récent au plus ancien ce qui échouait.
+
+
+# Certains Justificatif considérer comme Null
+
+- BillsUI.js + DashboardFormUI.js
+
+## Avant
+
+
+BillsUI.js
+
+(const hasValidFile exister pas ! )
+
+<td>
+  ${Actions(bill.fileUrl)}
+</td>
+
+DashboardFormUI.js
+
+<span id="file-name-admin">${bill.fileName}</span>
+<div class='icons-container'>
+  <span id="icon-eye-d" data-testid="icon-eye-d" data-bill-url="${bill.fileUrl}"> ${eyeWhite} </span>
+</div>
+
+
+## Après
+
+
+BillsUI.js
+
+const hasValidFile =  bill.fileUrl && 
+                      bill.fileUrl !== 'null' && 
+                      !bill.fileUrl.includes('/null')
+
+<td>
+  ${hasValidFile ? Actions(bill.fileUrl) : ''}
+</td>
+
+DashboardFormUI.js
+
+${bill.fileUrl && bill.fileUrl !== 'null' && !bill.fileUrl.includes('/null') ? 
+  `<span id="file-name-admin">${bill.fileName}</span>
+    <div class='icons-container'>
+      <span id="icon-eye-d" data-testid="icon-eye-d" data-bill-url="${bill.fileUrl}"> ${eyeWhite} </span>
+    </div>` 
+: ''}
+
+
+### Explication du problème
+
+Les bills on été concu sans protection . C'est à dire que si le fichier n'existe pas, il y a pas de conditions qui va le cacher. C'est ce que j'ai ajouté pour User et coté RH
+
+
+# Ajout d'une protection des factures (ne pas mettre des .mp3, .mp4 ...)
+ 
+ - 
+
+## Avant
+
+
+
+## Après
+
+
+
+### Explication du problème
+

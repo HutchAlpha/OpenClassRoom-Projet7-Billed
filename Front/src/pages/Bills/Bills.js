@@ -23,7 +23,7 @@ export const initBillsPage = ({ document, onNavigate, store, localStorage }) => 
       })
     })
   }
-
+  
   // Initialise le bouton de déconnexion
   new Logout({ document, localStorage, onNavigate })
 }
