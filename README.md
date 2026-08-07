@@ -18,3 +18,17 @@ npm run test
 ## Lancer les Test
 (être dans le Front)
 npm run test
+
+----------------------------
+
+
+### administrateur : 
+```
+utilisateur : admin@test.tld 
+mot de passe : admin
+```
+### employé :
+```
+utilisateur : employee@test.tld
+mot de passe : employee
+```
