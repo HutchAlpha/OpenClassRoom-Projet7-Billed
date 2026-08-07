@@ -223,15 +223,26 @@ Les bills on été concu sans protection . C'est à dire que si le fichier n'exi
 
 # Ajout d'une protection des factures (ne pas mettre des .mp3, .mp4 ...)
  
- - 
+ - NewBill.js
 
 ## Avant
 
 
 
 ## Après
+  function isValidFileType(fileName) {
+    const allowedExtensions = ['jpg', 'jpeg', 'png']
+    const fileExtension = fileName.split('.').pop().toLowerCase()
+    return allowedExtensions.includes(fileExtension)
+  }
 
+  if (!isValidFileType(fileName)) {
+    alert('Veuillez sélectionner un fichier au format JPG, JPEG ou PNG.')
+    document.querySelector(`input[data-testid="file"]`).value = ''
+    return
+  }
 
 
 ### Explication du problème
 
+Ajout d'une function isValidFileType dans handleChangeFile qui permet de filtrer le type de fichier afin d'éviter de se retrouver avec des fichier null pour les factures

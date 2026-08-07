@@ -37,6 +37,17 @@ const handleChangeFile = (e, { store, localStorage }) => {
   formData.append('file', file)
   formData.append('email', email)
 
+  function isValidFileType(fileName) {
+    const allowedExtensions = ['jpg', 'jpeg', 'png']
+    const fileExtension = fileName.split('.').pop().toLowerCase()
+    return allowedExtensions.includes(fileExtension)
+  }
+
+  if (!isValidFileType(fileName)) {
+    alert('Veuillez sélectionner un fichier au format JPG, JPEG ou PNG.')
+    document.querySelector(`input[data-testid="file"]`).value = ''
+    return
+  }
   if (store) {
     store
       .bills()
