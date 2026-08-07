@@ -5,9 +5,9 @@ import LoadingPage from "../../components/LoadingPage.js"
 import Actions from '../../components/Actions.js'
 
 const row = (bill) => {
-  const hasValidFile = bill.fileUrl && 
-                       bill.fileUrl !== 'null' && 
-                       !bill.fileUrl.includes('/null')
+  const hasValidFile =  bill.fileUrl && 
+                        bill.fileUrl !== 'null' && 
+                        !bill.fileUrl.includes('/null')
   
   return (`
     <tr>

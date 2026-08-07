@@ -82,7 +82,7 @@ const handleSubmit = (e, { onNavigate, store, localStorage }) => {
     email,
     type: e.target.querySelector(`select[data-testid="expense-type"]`).value,
     name: e.target.querySelector(`input[data-testid="expense-name"]`).value,
-    amount: parseInt(e.target.querySelector(`input[data-testid="amount"]`).value),
+    amount: parseFloat(e.target.querySelector(`input[data-testid="amount"]`).value),
     date: e.target.querySelector(`input[data-testid="datepicker"]`).value,
     vat: e.target.querySelector(`input[data-testid="vat"]`).value,
     pct: parseInt(e.target.querySelector(`input[data-testid="pct"]`).value) || 20,
@@ -90,6 +90,27 @@ const handleSubmit = (e, { onNavigate, store, localStorage }) => {
     fileUrl: billFileState.fileUrl,
     fileName: billFileState.fileName,
     status: 'pending'
+  }
+
+  if (bill.name === '') {
+      alert('Veuillez saisir un nom de dépense')
+      document.querySelector(`input[data-testid="expense-name"]`).value = ''
+      return 
+  }
+  if (bill.amount === '' || isNaN(bill.amount)) {
+      alert('Veuillez saisir un montant valide')
+      document.querySelector(`input[data-testid="amount"]`).value = ''
+      return 
+  }
+  if (bill.amount <= 0) {
+      alert('Veuillez saisir un montant positif')
+      document.querySelector(`input[data-testid="amount"]`).value = ''
+      return 
+  }
+  if (bill.commentary.length < 5) {
+      alert("Veuillez saisir un commentaire d'au moins 5 caractères")
+      document.querySelector('textarea[data-testid="commentary"]').value = ''
+      return
   }
 
   updateBill(bill, { billId: billFileState.billId, store, onNavigate })
