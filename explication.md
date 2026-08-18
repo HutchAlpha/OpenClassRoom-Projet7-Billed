@@ -248,7 +248,7 @@ Les bills on été concu sans protection . C'est à dire que si le fichier n'exi
 Ajout d'une function isValidFileType dans handleChangeFile qui permet de filtrer le type de fichier afin d'éviter de se retrouver avec des fichier null pour les factures
 
 
-# Ajout sécurité sur le formulaire
+# Ajout sécurité sur le formulaire (Employee)
 
  - NewBill.js
 
@@ -312,4 +312,44 @@ Ajout d'une function isValidFileType dans handleChangeFile qui permet de filtrer
 
 ### Explication du problème
 
-Ajout de la sécurité côté Salarié pour qu'il remplisses toutes les informations demandé, afin d'éviter a la RH de relancer le salarié avec des informations complémentaires ce qui évite de faire perdre du temps et donc de l'argent
+Ajout de la sécurité côté Employee pour qu'il remplisses toutes les informations demandé, afin d'éviter a la RH de relancer le salarié avec des informations complémentaires ce qui évite de faire perdre du temps et donc de l'argent
+
+
+# Correction OnNavigate pour (Employee)
+
+- Router.js
+
+## Avant
+
+const setActiveIcon = (iconNumber) => {
+  const divIcon1 = document.getElementById('layout-icon1')
+  const divIcon2 = document.getElementById('layout-icon2')
+
+  if (!divIcon1 || !divIcon2) return
+
+  if (iconNumber === 1) {
+    divIcon1.classList.add('active-icon')
+    divIcon2.classList.remove('active-icon')
+  } else {
+    divIcon1.classList.remove('active-icon')
+    divIcon2.classList.add('active-icon')
+  }
+}
+
+## Après
+const setActiveIcon = (iconNumber) => {
+  const divIcon1 = document.getElementById('layout-icon1')
+  const divIcon2 = document.getElementById('layout-icon2')
+
+  if (!divIcon1 || !divIcon2) return
+
+  divIcon1.classList.toggle('active-icon', iconNumber === 1)
+  divIcon2.classList.toggle('active-icon', iconNumber === 2)
+
+  divIcon1.onclick = () => window.onNavigate(ROUTES_PATH['Bills'])
+  divIcon2.onclick = () => window.onNavigate(ROUTES_PATH['NewBill'])
+}
+
+### Explication du problème
+
+setActiveIcon ne gérait que l'aspect visuel : elle ajoutait ou retirait la classe CSS 'active-icon' sur les deux icônes selon le numéro reçu. Aucun onclick n'était attaché aux icônes dans cette fonction, donc cliquer sur layout-icon1 ou layout-icon2 ne déclenchait aucune navigation

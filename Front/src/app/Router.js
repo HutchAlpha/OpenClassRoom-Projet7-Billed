@@ -20,15 +20,12 @@ const setActiveIcon = (iconNumber) => {
 
   if (!divIcon1 || !divIcon2) return
 
-  if (iconNumber === 1) {
-    divIcon1.classList.add('active-icon')
-    divIcon2.classList.remove('active-icon')
-  } else {
-    divIcon1.classList.remove('active-icon')
-    divIcon2.classList.add('active-icon')
-  }
-}
+  divIcon1.classList.toggle('active-icon', iconNumber === 1)
+  divIcon2.classList.toggle('active-icon', iconNumber === 2)
 
+  divIcon1.onclick = () => window.onNavigate(ROUTES_PATH['Bills'])
+  divIcon2.onclick = () => window.onNavigate(ROUTES_PATH['NewBill'])
+}
 // ===== Page Render Functions =====
 
 /**
