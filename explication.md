@@ -353,3 +353,77 @@ const setActiveIcon = (iconNumber) => {
 ### Explication du problème
 
 setActiveIcon ne gérait que l'aspect visuel : elle ajoutait ou retirait la classe CSS 'active-icon' sur les deux icônes selon le numéro reçu. Aucun onclick n'était attaché aux icônes dans cette fonction, donc cliquer sur layout-icon1 ou layout-icon2 ne déclenchait aucune navigation
+
+# Ajout bouton de telechargement (Employee)
+
+- Actions.js
+- Bills.js
+
+## Avant
+
+Actions.js
+
+export default (billUrl) => {
+  return (
+    `<div class="icon-actions">
+      <div id="eye" data-testid="icon-eye" data-bill-url=${billUrl}>
+      ${eyeBlueIcon}
+      </div>
+    </div>`
+  )
+}
+
+Bills.js
+
+
+## Après
+Actions.js
+
+export default (billUrl) => {
+  return (
+    `<div class="icon-actions">
+        <div id="eye" data-testid="icon-eye" data-bill-url=${billUrl}>
+        ${eyeBlueIcon}
+        </div>
+        <div id="download" data-testid="icon-download" data-bill-url=${billUrl}>
+        ${downloadBlueIcon}
+        </div>
+      </div>
+    </div>`
+  )
+}
+
+
+Bills.js
+
+  // Icônes "download" pour télécharger le justificatif
+  const iconDownloads = document.querySelectorAll(`div[data-testid="icon-download"]`)
+  if (iconDownloads) {
+    iconDownloads.forEach(icon => {
+      icon.addEventListener('click', (e) => {
+        handleClickIconDownload(icon, e)
+      })
+    })
+  }
+
+/**
+ * Gère le clic sur l'icône download - Ouvre/télécharge le justificatif
+ */
+const handleClickIconDownload = (icon, e) => {
+  e.preventDefault()
+
+  const billUrl = icon.getAttribute("data-bill-url")
+  const hasValidFile = billUrl && billUrl !== 'null' && !billUrl.includes('/null')
+
+  if (hasValidFile) {
+    const link = document.createElement('a')
+    link.href = billUrl
+    link.download = 'justificatif.jpg'
+    link.target = '_blank'
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+
+### Explication du problème
+
+Le bouton de telechargement été déja dans les logos mais non utilisé, j'ai ajouté le systéme + l'affichage

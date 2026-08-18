@@ -23,7 +23,17 @@ export const initBillsPage = ({ document, onNavigate, store, localStorage }) => 
       })
     })
   }
-  
+
+  // Icônes "download" pour télécharger le justificatif
+  const iconDownloads = document.querySelectorAll(`div[data-testid="icon-download"]`)
+  if (iconDownloads) {
+    iconDownloads.forEach(icon => {
+      icon.addEventListener('click', (e) => {
+        handleClickIconDownload(icon, e)
+      })
+    })
+  }
+
   // Initialise le bouton de déconnexion
   new Logout({ document, localStorage, onNavigate })
 }
@@ -48,6 +58,25 @@ const handleClickIconEye = (icon, document) => {
   modal.show()
 }
 
+/**
+ * Gère le clic sur l'icône download - Ouvre/télécharge le justificatif
+ */
+const handleClickIconDownload = (icon, e) => {
+  e.preventDefault()
+
+  const billUrl = icon.getAttribute("data-bill-url")
+  const hasValidFile = billUrl && billUrl !== 'null' && !billUrl.includes('/null')
+
+  if (hasValidFile) {
+    const link = document.createElement('a')
+    link.href = billUrl
+    link.download = 'justificatif.jpg'
+    link.target = '_blank'
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+  }
+}
 /**
  * Récupère les bills depuis le store
  */
