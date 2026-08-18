@@ -1,4 +1,4 @@
-Lancer les test : npm run test
+#### EXPLICATIONS DES CORRECTIFS ####
 
 
 # Problème connexion Admin
