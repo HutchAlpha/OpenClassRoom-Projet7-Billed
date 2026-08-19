@@ -143,6 +143,44 @@ Même problème que côté employee : `#modaleFileAdmin1` est l'élément `.moda
 La solution est identique : utiliser des propriétés CSS responsives (`max-width: 100%`, `max-height: 80vh`, `height: auto`, `object-fit: contain`) au lieu d'une largeur fixe en pixels.
 
 
+# Ajout Visibilité Doc (Admin)
+
+- Dashboard.js
+
+## Avant
+
+```js
+<div class="col-sm">
+  <label for="file" class="bold-label">Justificatif</label>
+    <div class='input-field input-flex file-flex'>
+    <span id="file-name-admin">${bill.fileName}</span>
+    ${bill.fileUrl && bill.fileUrl !== 'null' && !bill.fileUrl.includes('/null') ? 
+      `<div class='icons-container'>
+        <
+      </div>` : ''}
+  </div>
+```
+
+## Après
+
+```js
+<div class="col-sm">
+  <label for="file" class="bold-label">Justificatif</label>
+  <div class='input-field input-flex file-flex'>
+    <span id='file-name-admin'> ${bill.fileName} </span>
+    ${bill.fileUrl && bill.fileUrl !== 'null' && !bill.fileUrl.includes('/null') ?
+      `<div class='icons-container'>
+        <div id='icon-eye-d' data-testid='icon-eye-d' data-bill-url='${bill.fileUrl}' style='cursor: pointer;'>
+          ${eyeWhite}
+        </div>
+      </div>` : ''}
+  </div>
+```
+
+
+### Explication du problème
+
+Le bouton pour voir le document n'a pas était mis pour le mode ADMIN
 
 # Bills non triées par date
 
@@ -542,41 +580,3 @@ if (btnRefuse) btnRefuse.addEventListener('click', async (e) => {
 Un probléme majeur et que il y avait le traitement de newBill pour Accepter et Refusé mais Bill était pas du tout maj donc il ne prennais pas les valeurs mise à jours ce qui entrainer aucun changements 
 
 
-# Ajout Visibilité Doc (Admin)
-
-- Dashboard.js
-
-## Avant
-
-```js
-<div class="col-sm">
-  <label for="file" class="bold-label">Justificatif</label>
-    <div class='input-field input-flex file-flex'>
-    <span id="file-name-admin">${bill.fileName}</span>
-    ${bill.fileUrl && bill.fileUrl !== 'null' && !bill.fileUrl.includes('/null') ? 
-      `<div class='icons-container'>
-        <
-      </div>` : ''}
-  </div>
-```
-
-## Après
-
-```js
-<div class="col-sm">
-  <label for="file" class="bold-label">Justificatif</label>
-  <div class='input-field input-flex file-flex'>
-    <span id='file-name-admin'> ${bill.fileName} </span>
-    ${bill.fileUrl && bill.fileUrl !== 'null' && !bill.fileUrl.includes('/null') ?
-      `<div class='icons-container'>
-        <div id='icon-eye-d' data-testid='icon-eye-d' data-bill-url='${bill.fileUrl}' style='cursor: pointer;'>
-          ${eyeWhite}
-        </div>
-      </div>` : ''}
-  </div>
-```
-
-
-### Explication du problème
-
-Un probléme majeur et que il y avait le traitement de newBill pour Accepter et Refusé mais Bill était pas du tout maj donc il ne prennais pas les valeurs mise à jours ce qui entrainer aucun changements 
