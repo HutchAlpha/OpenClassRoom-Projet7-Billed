@@ -248,18 +248,6 @@ export const handleRefuseSubmit = (e, bill, document) => {
   return newBillRefuse
 }
 
-function MajBills(bills, newBillAccept, newBillRefuse) {
-  return bills.map(bill => {
-    if (newBillAccept && bill.id === newBillAccept.id) {
-      return newBillAccept
-    } else if (newBillRefuse && bill.id === newBillRefuse.id) {
-      return newBillRefuse
-    } else {
-      return bill
-    }
-  })
-}
-
 
 /**
  * Gère l'affichage/masquage des tickets

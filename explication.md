@@ -499,8 +499,6 @@ Le bouton de telechargement été déja dans les logos mais non utilisé, j'ai a
 
 # Correction de la Notation pour les notes de Frais (Admin)
 
-
-
 - Dashboard.js
 
 ## Avant
@@ -536,18 +534,46 @@ if (btnRefuse) btnRefuse.addEventListener('click', async (e) => {
 
 //newBill c'est transformé en newBillAccept et newBillRefuse afin de séparer et d'éviter les mélanges de codes
 
-// Ajout d'une nouvelles function afin de Maj les donnée de Bill
-function MajBills(bills, newBillAccept, newBillRefuse) {
-  return bills.map(bill => {
-    if (newBillAccept && bill.id === newBillAccept.id) {
-      return newBillAccept
-    } else if (newBillRefuse && bill.id === newBillRefuse.id) {
-      return newBillRefuse
-    } else {
-      return bill
-    }
-  })
-}
+```
+
+
+### Explication du problème
+
+Un probléme majeur et que il y avait le traitement de newBill pour Accepter et Refusé mais Bill était pas du tout maj donc il ne prennais pas les valeurs mise à jours ce qui entrainer aucun changements 
+
+
+# Ajout Visibilité Doc (Admin)
+
+- Dashboard.js
+
+## Avant
+
+```js
+<div class="col-sm">
+  <label for="file" class="bold-label">Justificatif</label>
+    <div class='input-field input-flex file-flex'>
+    <span id="file-name-admin">${bill.fileName}</span>
+    ${bill.fileUrl && bill.fileUrl !== 'null' && !bill.fileUrl.includes('/null') ? 
+      `<div class='icons-container'>
+        <
+      </div>` : ''}
+  </div>
+```
+
+## Après
+
+```js
+<div class="col-sm">
+  <label for="file" class="bold-label">Justificatif</label>
+  <div class='input-field input-flex file-flex'>
+    <span id='file-name-admin'> ${bill.fileName} </span>
+    ${bill.fileUrl && bill.fileUrl !== 'null' && !bill.fileUrl.includes('/null') ?
+      `<div class='icons-container'>
+        <div id='icon-eye-d' data-testid='icon-eye-d' data-bill-url='${bill.fileUrl}' style='cursor: pointer;'>
+          ${eyeWhite}
+        </div>
+      </div>` : ''}
+  </div>
 ```
 
 

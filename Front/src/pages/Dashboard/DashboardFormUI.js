@@ -66,11 +66,15 @@ export default (bill) => {
         <div class="col-sm">
           <label for="file" class="bold-label">Justificatif</label>
             <div class='input-field input-flex file-flex'>
-            <span id="file-name-admin">${bill.fileName}</span>
-            ${bill.fileUrl && bill.fileUrl !== 'null' && !bill.fileUrl.includes('/null') ? 
-              `<div class='icons-container'>
-                <
-              </div>` : ''}
+              <span id='file-name-admin'> ${bill.fileName} </span>
+              ${bill.fileUrl && bill.fileUrl !== 'null' && !bill.fileUrl.includes('/null') ?
+                `<div class='icons-container'>
+                  <div id='icon-eye-d' data-testid='icon-eye-d' data-bill-url='${bill.fileUrl}' style='cursor: pointer;'>
+                    ${eyeWhite}
+                  </div>
+                </div>` : ''
+              }
+            </div>
           </div>
         </div>
       </div>
