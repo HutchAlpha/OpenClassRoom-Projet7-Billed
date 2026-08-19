@@ -78,7 +78,7 @@ export const cards = (bills) => {
 export const getStatus = (index) => {
   switch (index) {
     case 1:
-      return "pending"
+      return "pending" //en attente
     case 2:
       return "accepted"
     case 3:
@@ -168,13 +168,19 @@ export const handleEditTicket = (e, bill, bills, document) => {
   const iconEye = document.querySelector('#icon-eye-d')
   if (iconEye) iconEye.addEventListener('click', () => handleClickIconEye(document))
 
-  const btnAccept = document.querySelector('#btn-accept-bill')
-  if (btnAccept) btnAccept.addEventListener('click', (e) =>
-    handleAcceptSubmit(e, bill, document))
+const btnAccept = document.querySelector('#btn-accept-bill')
+if (btnAccept) btnAccept.addEventListener('click', async (e) => {
+  const newBillAccept = handleAcceptSubmit(e, bill, document)
+  await updateBill(newBillAccept, store)         
+  bills = await getBillsAllUsers(store)          
+})
 
-  const btnRefuse = document.querySelector('#btn-refuse-bill')
-  if (btnRefuse) btnRefuse.addEventListener('click', (e) =>
-    handleRefuseSubmit(e, bill, document))
+const btnRefuse = document.querySelector('#btn-refuse-bill')
+if (btnRefuse) btnRefuse.addEventListener('click', async (e) => {
+  const newBillRefuse = handleRefuseSubmit(e, bill, document)
+  await updateBill(newBillRefuse, store)
+  bills = await getBillsAllUsers(store)
+})
 }
 
 /**
@@ -182,7 +188,7 @@ export const handleEditTicket = (e, bill, bills, document) => {
  * Exported for testing purposes
  */
 export const handleAcceptSubmit = (e, bill, document) => {
-  const newBill = {
+  const newBillAccept = {
     ...bill,
     status: 'accepted',
     commentAdmin: document.querySelector('#commentary2').value
@@ -205,9 +211,8 @@ export const handleAcceptSubmit = (e, bill, document) => {
 
   const navbar = document.querySelector('.vertical-navbar')
   if (navbar) navbar.style.height = '120vh'
-
   // Note: updateBill appelée par le code appelant
-  return newBill
+  return newBillAccept
 }
 
 /**
@@ -215,7 +220,7 @@ export const handleAcceptSubmit = (e, bill, document) => {
  * Exported for testing purposes
  */
 export const handleRefuseSubmit = (e, bill, document) => {
-  const newBill = {
+  const newBillRefuse = {
     ...bill,
     status: 'refused',
     commentAdmin: document.querySelector('#commentary2').value
@@ -240,14 +245,28 @@ export const handleRefuseSubmit = (e, bill, document) => {
   if (navbar) navbar.style.height = '120vh'
 
   // Note: updateBill appelée par le code appelant
-  return newBill
+  return newBillRefuse
 }
+
+function MajBills(bills, newBillAccept, newBillRefuse) {
+  return bills.map(bill => {
+    if (newBillAccept && bill.id === newBillAccept.id) {
+      return newBillAccept
+    } else if (newBillRefuse && bill.id === newBillRefuse.id) {
+      return newBillRefuse
+    } else {
+      return bill
+    }
+  })
+}
+
 
 /**
  * Gère l'affichage/masquage des tickets
  * Exported for testing purposes
  */
 export const handleShowTickets = (e, bills, index, document) => {
+  console.log(bills)
   if (dashboardState.counter === undefined || dashboardState.index !== index) {
     dashboardState.counter = 0
   }
