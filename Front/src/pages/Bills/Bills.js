@@ -86,20 +86,22 @@ export const getBills = async (store) => {
   try {
     const snapshot = await store.bills().list()
 
-    const bills = snapshot.map(doc => {
+  const bills = snapshot
+    .sort((a, b) => new Date(b.date) - new Date(a.date))
+    .map(doc => {
       try {
-        return {
-          ...doc,
-          date: formatDate(doc.date),
-          status: formatStatus(doc.status)
+        return { 
+          ...doc, 
+          date: formatDate(doc.date), 
+          status: formatStatus(doc.status) 
         }
       } catch (e) {
         // Si les données sont corrompues, on garde la date non formatée
         console.log(e, 'for', doc)
-        return {
-          ...doc,
-          date: doc.date,
-          status: formatStatus(doc.status)
+        return { 
+          ...doc, 
+          date: doc.date, 
+          status: formatStatus(doc.status) 
         }
       }
     })

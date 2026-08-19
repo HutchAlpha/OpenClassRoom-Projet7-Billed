@@ -26,8 +26,7 @@ const row = (bill) => {
 const rows = (data) => {
   if (!data || !data.length) return ""
   //! Tri anti-chronologique (du plus récent au plus ancien)
-  const sortedData = [...data].sort((a, b) => (a.date < b.date ? 1 : -1))
-  return sortedData.map(bill => row(bill)).join("")
+   return data.map(bill => row(bill)).join("")
 }
 
 export default ({ data: bills, loading, error }) => {

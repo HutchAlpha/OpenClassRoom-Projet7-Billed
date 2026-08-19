@@ -143,8 +143,11 @@ La solution est identique : utiliser des propriétés CSS responsives (`max-widt
 # Bills non triées par date
 
 - BillsUI.js
+- Bills.js
 
 ## Avant
+
+BillsUI.js
 
 ```js
 const rows = (data) => {
@@ -152,22 +155,72 @@ const rows = (data) => {
 }
 ```
 
+Bills.js
+
+```js
+  try {
+    const snapshot = await store.bills().list()
+
+    const bills = snapshot.map(doc => {
+      try {
+        return {
+          ...doc,
+          date: formatDate(doc.date),
+          status: formatStatus(doc.status)
+        }
+      } catch (e) {
+        // Si les données sont corrompues, on garde la date non formatée
+        console.log(e, 'for', doc)
+        return {
+          ...doc,
+          date: doc.date,
+          status: formatStatus(doc.status)
+        }
+      }
+    })
+```
+
 ## Après
+
+BillsUI.js
 
 ```js
 const rows = (data) => {
   if (!data || !data.length) return ""
   //! Tri anti-chronologique (du plus récent au plus ancien)
-  const sortedData = [...data].sort((a, b) => (a.date < b.date ? 1 : -1))
-  return sortedData.map(bill => row(bill)).join("")
+   return data.map(bill => row(bill)).join("")
 }
+```
+Bills.js
+
+```js
+try {
+    const snapshot = await store.bills().list()
+
+  const bills = snapshot
+    .sort((a, b) => new Date(b.date) - new Date(a.date))
+    .map(doc => {
+      try {
+        return { 
+          ...doc, 
+          date: formatDate(doc.date), 
+          status: formatStatus(doc.status) 
+        }
+      } catch (e) {
+        // Si les données sont corrompues, on garde la date non formatée
+        console.log(e, 'for', doc)
+        return { 
+          ...doc, 
+          date: doc.date, 
+          status: formatStatus(doc.status) 
+        }
+      }
+    })
 ```
 
 ### Explication du problème
 
-Les bills s'affichaient dans l'ordre des fixtures, sans tri. 
-
-Problémes, le test vérifiait que les dates étaient triées du plus récent au plus ancien ce qui échouait.
+Le test Bills.js vérifiait que getBills() retourne les notes de frais triées de la plus récente à la plus ancienne. Comme aucun .sort() n'était appliqué avant le formatage des dates, l'ordre dépendait uniquement de l'ordre renvoyé par store.bills().list()
 
 
 # Certains Justificatif considérer comme Null
@@ -230,6 +283,7 @@ Les bills on été concu sans protection . C'est à dire que si le fichier n'exi
 
 
 ## Après
+```js
   function isValidFileType(fileName) {
     const allowedExtensions = ['jpg', 'jpeg', 'png']
     const fileExtension = fileName.split('.').pop().toLowerCase()
@@ -241,7 +295,7 @@ Les bills on été concu sans protection . C'est à dire que si le fichier n'exi
     document.querySelector(`input[data-testid="file"]`).value = ''
     return
   }
-
+```
 
 ### Explication du problème
 
@@ -253,6 +307,7 @@ Ajout d'une function isValidFileType dans handleChangeFile qui permet de filtrer
  - NewBill.js
 
 ## Avant
+```js
   const bill = {
     email,
     type: e.target.querySelector(`select[data-testid="expense-type"]`).value,
@@ -269,9 +324,11 @@ Ajout d'une function isValidFileType dans handleChangeFile qui permet de filtrer
 
   updateBill(bill, { billId: billFileState.billId, store, onNavigate })
 }
+```
 
 
 ## Après
+```js
   const bill = {
     email,
     type: e.target.querySelector(`select[data-testid="expense-type"]`).value,
@@ -309,6 +366,7 @@ Ajout d'une function isValidFileType dans handleChangeFile qui permet de filtrer
 
   updateBill(bill, { billId: billFileState.billId, store, onNavigate })
 }
+```
 
 ### Explication du problème
 
@@ -320,7 +378,7 @@ Ajout de la sécurité côté Employee pour qu'il remplisses toutes les informat
 - Router.js
 
 ## Avant
-
+```js
 const setActiveIcon = (iconNumber) => {
   const divIcon1 = document.getElementById('layout-icon1')
   const divIcon2 = document.getElementById('layout-icon2')
@@ -335,8 +393,10 @@ const setActiveIcon = (iconNumber) => {
     divIcon2.classList.add('active-icon')
   }
 }
+```
 
 ## Après
+```js
 const setActiveIcon = (iconNumber) => {
   const divIcon1 = document.getElementById('layout-icon1')
   const divIcon2 = document.getElementById('layout-icon2')
@@ -349,6 +409,7 @@ const setActiveIcon = (iconNumber) => {
   divIcon1.onclick = () => window.onNavigate(ROUTES_PATH['Bills'])
   divIcon2.onclick = () => window.onNavigate(ROUTES_PATH['NewBill'])
 }
+```
 
 ### Explication du problème
 
@@ -356,13 +417,15 @@ setActiveIcon ne gérait que l'aspect visuel : elle ajoutait ou retirait la clas
 
 # Ajout bouton de telechargement (Employee)
 
+
+
 - Actions.js
 - Bills.js
 
 ## Avant
 
 Actions.js
-
+```js
 export default (billUrl) => {
   return (
     `<div class="icon-actions">
@@ -372,13 +435,14 @@ export default (billUrl) => {
     </div>`
   )
 }
-
+```
 Bills.js
 
 
 ## Après
-Actions.js
 
+Actions.js
+```js
 export default (billUrl) => {
   return (
     `<div class="icon-actions">
@@ -392,10 +456,10 @@ export default (billUrl) => {
     </div>`
   )
 }
-
+```
 
 Bills.js
-
+```js
   // Icônes "download" pour télécharger le justificatif
   const iconDownloads = document.querySelectorAll(`div[data-testid="icon-download"]`)
   if (iconDownloads) {
@@ -423,7 +487,66 @@ const handleClickIconDownload = (icon, e) => {
     document.body.appendChild(link)
     link.click()
     document.body.removeChild(link)
+```
 
 ### Explication du problème
 
 Le bouton de telechargement été déja dans les logos mais non utilisé, j'ai ajouté le systéme + l'affichage
+
+# Correction de la Notation pour les notes de Frais (Admin)
+
+
+
+- Dashboard.js
+
+## Avant
+
+```js
+  const btnAccept = document.querySelector('#btn-accept-bill')
+  if (btnAccept) btnAccept.addEventListener('click', (e) =>
+    handleAcceptSubmit(e, bill, document))
+
+  const btnRefuse = document.querySelector('#btn-refuse-bill')
+  if (btnRefuse) btnRefuse.addEventListener('click', (e) =>
+    handleRefuseSubmit(e, bill, document))
+}
+```
+
+## Après
+
+```js
+const btnAccept = document.querySelector('#btn-accept-bill')
+if (btnAccept) btnAccept.addEventListener('click', async (e) => {
+  const newBillAccept = handleAcceptSubmit(e, bill, document)
+  await updateBill(newBillAccept, store)
+  if (typeof onNavigate === 'function') onNavigate(ROUTES_PATH.Dashboard)
+})
+
+const btnRefuse = document.querySelector('#btn-refuse-bill')
+if (btnRefuse) btnRefuse.addEventListener('click', async (e) => {
+  const newBillRefuse = handleRefuseSubmit(e, bill, document)
+  await updateBill(newBillRefuse, store)
+  if (typeof onNavigate === 'function') onNavigate(ROUTES_PATH.Dashboard)
+})
+}
+
+//newBill c'est transformé en newBillAccept et newBillRefuse afin de séparer et d'éviter les mélanges de codes
+
+// Ajout d'une nouvelles function afin de Maj les donnée de Bill
+function MajBills(bills, newBillAccept, newBillRefuse) {
+  return bills.map(bill => {
+    if (newBillAccept && bill.id === newBillAccept.id) {
+      return newBillAccept
+    } else if (newBillRefuse && bill.id === newBillRefuse.id) {
+      return newBillRefuse
+    } else {
+      return bill
+    }
+  })
+}
+```
+
+
+### Explication du problème
+
+Un probléme majeur et que il y avait le traitement de newBill pour Accepter et Refusé mais Bill était pas du tout maj donc il ne prennais pas les valeurs mise à jours ce qui entrainer aucun changements 
