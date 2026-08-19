@@ -6,20 +6,23 @@
 - Login.js
 
 ## Avant
+```js
   const user = {
     type: "Admin",
     email: e.target.querySelector(`input[data-testid="  //employee//  -email-input"]`).value,
     password: e.target.querySelector(`input[data-testid="  //employee//  -password-input"]`).value,
     status: "connected"
   }
-
+```
 ##  Après
+```js
   const user = {
     type: "Admin",
     email: e.target.querySelector(`input[data-testid="admin-email-input"]`).value,
     password: e.target.querySelector(`input[data-testid="admin-password-input"]`).value,
     status: "connected"
   }
+```
 
 ### Explication du problème
 Emplyee a été mis au lieu de user donc type été a null a cause de cela
@@ -31,7 +34,7 @@ Emplyee a été mis au lieu de user donc type été a null a cause de cela
 - Bills.js
 
 ## Avant
-
+```js
 /**
  * Gère le clic sur l'icône oeil - Ouvre la modale avec l'image
  */
@@ -51,9 +54,10 @@ const handleClickIconEye = (icon, document) => {
 
   modal.show()
 }
+```
 
 ## Après
-
+```js
 /**
  * Gère le clic sur l'icône oeil - Ouvre la modale avec l'image
  */
@@ -73,7 +77,7 @@ const handleClickIconEye = (icon, document) => {
 
   modal.show()
 }
-
+```
 ### Explication du problème
 
 Le code original calculait la largeur de l'image avec :
@@ -233,7 +237,7 @@ Le test Bills.js vérifiait que getBills() retourne les notes de frais triées d
 BillsUI.js
 
 (const hasValidFile exister pas ! )
-
+```js
 <td>
   ${Actions(bill.fileUrl)}
 </td>
@@ -244,13 +248,13 @@ DashboardFormUI.js
 <div class='icons-container'>
   <span id="icon-eye-d" data-testid="icon-eye-d" data-bill-url="${bill.fileUrl}"> ${eyeWhite} </span>
 </div>
-
+```
 
 ## Après
 
 
 BillsUI.js
-
+```js
 const hasValidFile =  bill.fileUrl && 
                       bill.fileUrl !== 'null' && 
                       !bill.fileUrl.includes('/null')
@@ -267,7 +271,7 @@ ${bill.fileUrl && bill.fileUrl !== 'null' && !bill.fileUrl.includes('/null') ?
       <span id="icon-eye-d" data-testid="icon-eye-d" data-bill-url="${bill.fileUrl}"> ${eyeWhite} </span>
     </div>` 
 : ''}
-
+```
 
 ### Explication du problème
 
