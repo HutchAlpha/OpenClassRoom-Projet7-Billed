@@ -228,10 +228,11 @@ BillsUI.js
 
 ```js
 const rows = (data) => {
-  if (!data || !data.length) return ""
-  //! Tri anti-chronologique (du plus récent au plus ancien)
-   return data.map(bill => row(bill)).join("")
+  if (!data || !data.length) return ''
+  //! Tri anti-chronologique du plus récent au plus ancien
+  return [...data].sort((a, b) => new Date(b.date) - new Date(a.date)).map(bill => row(bill)).join('')
 }
+
 ```
 Bills.js
 
@@ -262,7 +263,13 @@ try {
 
 ### Explication du problème
 
-Le test Bills.js vérifiait que getBills() retourne les notes de frais triées de la plus récente à la plus ancienne. Comme aucun .sort() n'était appliqué avant le formatage des dates, l'ordre dépendait uniquement de l'ordre renvoyé par store.bills().list()
+Le test (Mock) exige que les notes de frais s'affichent triées de la plus récente à la plus ancienne. 
+
+Sans .sort(), l'ordre dépend uniquement de ce que renvoie store.bills().list(), sans aucune garantie chronologique.
+
+Cependant, Le tri doit impérativement se faire avant formatDate() : une fois la date reformatée (ex. "4 Avr. 04"), elle ne se compare plus correctement. Le tri fonctionne uniquement sur la date brute au format YYYY-MM-DD, via 
+new Date(b.date) - new Date(a.date), 
+car ce format ISO rend l'ordre alphabétique et chronologique équivalents.
 
 
 # Certains Justificatif considérer comme Null

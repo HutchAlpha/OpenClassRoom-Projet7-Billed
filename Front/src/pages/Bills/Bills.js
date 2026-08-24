@@ -24,16 +24,6 @@ export const initBillsPage = ({ document, onNavigate, store, localStorage }) => 
     })
   }
 
-  // Icônes "download" pour télécharger le justificatif
-  const iconDownloads = document.querySelectorAll(`div[data-testid="icon-download"]`)
-  if (iconDownloads) {
-    iconDownloads.forEach(icon => {
-      icon.addEventListener('click', (e) => {
-        handleClickIconDownload(icon, e)
-      })
-    })
-  }
-
   // Initialise le bouton de déconnexion
   new Logout({ document, localStorage, onNavigate })
 }
@@ -48,50 +38,49 @@ const handleClickIconEye = (icon, document) => {
 
   modaleFile.addEventListener('shown.bs.modal', () => {
     const modalBody = modaleFile.querySelector(".modal-body")
-    modalBody.innerHTML =
+    modalBody.innerHTML = 
       `<div style="text-align: center;" class="bill-proof-container">
-        <img src="${billUrl}" alt="Bill"
-          style="max-width: 100%; max-height: 80vh; height: auto; object-fit: contain;" />
+        <img src=${billUrl} alt="Bill"
+        style="max-width: 100%; max-height: 80vh; height: auto; object-fit: contain;" />
       </div>`
   }, { once: true })
 
   modal.show()
 }
 
-
 /**
  * Récupère les bills depuis le store
  */
 export const getBills = async (store) => {
-  if (!store) return []
+  if (!store) return
 
   try {
     const snapshot = await store.bills().list()
 
-  const bills = snapshot
-    .sort((a, b) => new Date(b.date) - new Date(a.date))
-    .map(doc => {
-      try {
-        return { 
-          ...doc, 
-          date: formatDate(doc.date), 
-          status: formatStatus(doc.status) 
+    const bills = snapshot
+      .sort((a, b) => new Date(b.date) - new Date(a.date))
+      .map(doc => {
+        try {
+          return {
+            ...doc,
+            date: formatDate(doc.date),
+            status: formatStatus(doc.status)
+          }
+        } catch (e) {
+          // Si les données sont corrompues, on garde la date non formatée
+          console.log(e, 'for', doc)
+          return {
+            ...doc,
+            date: doc.date,
+            status: formatStatus(doc.status)
+          }
         }
-      } catch (e) {
-        // Si les données sont corrompues, on garde la date non formatée
-        console.log(e, 'for', doc)
-        return { 
-          ...doc, 
-          date: doc.date, 
-          status: formatStatus(doc.status) 
-        }
-      }
-    })
+      })
 
     console.log('length', bills.length)
     return bills
   } catch (error) {
-    console.error('Error fetching bills:', error)
+    console.error('Error fetching bills', error)
     throw error
   }
 }
