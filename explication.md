@@ -1,5 +1,9 @@
 #### EXPLICATIONS DES CORRECTIFS ####
 
+Changement a faire : 
+
+- Pour Admin, ajouter ordre des dates
+- Ajouter des tests unitaires
 
 # Problème connexion Admin
 
@@ -466,7 +470,7 @@ setActiveIcon ne gérait que l'aspect visuel : elle ajoutait ou retirait la clas
 
 
 
-# Correction de la Notation pour les notes de Frais (Admin)
+# Correction de la Notation (Si le RH Accepte ou Refuse) pour les notes de Frais (Admin)
 
 - Dashboard.js
 
@@ -509,5 +513,201 @@ if (btnRefuse) btnRefuse.addEventListener('click', async (e) => {
 ### Explication du problème
 
 Un probléme majeur et que il y avait le traitement de newBill pour Accepter et Refusé mais Bill était pas du tout maj donc il ne prennais pas les valeurs mise à jours ce qui entrainer aucun changements 
+
+
+# Correction Beug Affichage entre deux type de fiche (Admin)
+
+-Dashboard.js 
+
+## Avant
+
+```js
+let dashboardState = {
+  counter: undefined,
+  index: undefined,
+  id: undefined
+}
+
+/**
+ * Gère l'édition d'un ticket
+ * Exported for testing purposes
+ */
+export const handleEditTicket = (e, bill, bills, document, store, onNavigate) => {
+  if (dashboardState.counter === undefined || dashboardState.id !== bill.id) {
+    dashboardState.counter = 0
+  }
+  if (dashboardState.id === undefined || dashboardState.id !== bill.id) {
+    dashboardState.id = bill.id
+  }
+
+  if (dashboardState.counter % 2 === 0) {
+    bills.forEach(b => {
+      const el = document.querySelector(`#open-bill${b.id}`)
+      if (el) el.style.background = '#0D5AE5'
+    })
+
+    const billEl = document.querySelector(`#open-bill${bill.id}`)
+    if (billEl) billEl.style.background = '#2A2B35'
+
+    document.querySelector('.dashboard-right-container div').innerHTML = DashboardFormUI(bill)
+    document.querySelector('.vertical-navbar').style.height = '150vh'
+    dashboardState.counter++
+  } else {
+    const billEl = document.querySelector(`#open-bill${bill.id}`)
+    if (billEl) billEl.style.background = '#0D5AE5'
+
+    document.querySelector('.dashboard-right-container div').innerHTML = `
+      <div id="big-billed-icon" data-testid="big-billed-icon"> ${BigBilledIcon} </div>
+    `
+    document.querySelector('.vertical-navbar').style.height = '120vh'
+    dashboardState.counter++
+  }
+
+
+/**
+ * Gère l'affichage/masquage des tickets
+ * Exported for testing purposes
+ */
+export const handleShowTickets = (e, bills, index, document, store, onNavigate) => {
+  if (dashboardState.counter === undefined || dashboardState.index !== index) {
+    dashboardState.counter = 0
+  }
+  if (dashboardState.index === undefined || dashboardState.index !== index) {
+    dashboardState.index = index
+  }
+
+  if (dashboardState.counter % 2 === 0) {
+    const arrow = document.querySelector(`#arrow-icon${dashboardState.index}`)
+    if (arrow) arrow.style.transform = 'rotate(0deg)'
+
+    document.querySelector(`#status-bills-container${dashboardState.index}`)
+      .innerHTML = cards(filteredBills(bills, getStatus(dashboardState.index)))
+
+    dashboardState.counter++
+  } else {
+    const arrow = document.querySelector(`#arrow-icon${dashboardState.index}`)
+    if (arrow) arrow.style.transform = 'rotate(90deg)'
+
+    document.querySelector(`#status-bills-container${dashboardState.index}`)
+      .innerHTML = ""
+
+    dashboardState.counter++
+  }
+
+  bills.forEach(bill => {
+    const openBill = document.querySelector(`#open-bill${bill.id}`)
+    if (openBill) openBill.addEventListener('click', (e) =>
+      handleEditTicket(e, bill, bills, document, store, onNavigate))
+  })
+
+  return bills
+}
+
+
+/**
+ * Réinitialise l'état du dashboard (utile pour les tests)
+ */
+export const resetDashboardState = () => {
+  dashboardState = {
+    counter: undefined,
+    index: undefined,
+    id: undefined
+  }
+```
+
+## Après
+
+```js
+let dashboardState = {
+  openIndexes: new Set(),
+  selectedBillId: undefined //La sélection d'un ticket
+}
+
+/**
+ * Gère l'édition d'un ticket
+ * Exported for testing purposes
+ */
+export const handleEditTicket = (e, bill, bills, document, store, onNavigate) => {
+  const isSameBillAlreadyOpen = dashboardState.selectedBillId === bill.id
+
+  // Remet en couleur neutre toutes les cards avant de mettre en avant la bonne
+    bills.forEach(b => {
+      const el = document.querySelector(`#open-bill${b.id}`)
+      if (el) el.style.background = '#0D5AE5'
+    })
+
+  if (isSameBillAlreadyOpen) {
+    // Toggle : on referme le formulaire si on reclique sur le même ticket
+    dashboardState.selectedBillId = undefined
+
+    document.querySelector('.dashboard-right-container div').innerHTML = `
+      <div id="big-billed-icon" data-testid="big-billed-icon"> ${BigBilledIcon} </div>
+    `
+    document.querySelector('.vertical-navbar').style.height = '120vh'
+    return
+  }
+
+  // Sélection d'un nouveau ticket
+  dashboardState.selectedBillId = bill.id
+
+  const billEl = document.querySelector(`#open-bill${bill.id}`)
+  if (billEl) billEl.style.background = '#2A2B35'
+
+  document.querySelector('.dashboard-right-container div').innerHTML = DashboardFormUI(bill)
+  document.querySelector('.vertical-navbar').style.height = '150vh'
+
+
+/**
+ * Gère l'affichage/masquage des tickets
+ * Exported for testing purposes
+ */
+export const handleShowTickets = (e, bills, index, document, store, onNavigate) => {
+  const isCurrentlyOpen = dashboardState.openIndexes.has(index)
+  const arrow = document.querySelector(`#arrow-icon${index}`)
+  const container = document.querySelector(`#status-bills-container${index}`)
+
+  if (isCurrentlyOpen) {
+    // On referme cette liste précise
+    dashboardState.openIndexes.delete(index)
+    if (arrow) arrow.style.transform = 'rotate(0deg)'
+    if (container) container.innerHTML = ""
+    return
+  }
+
+  // On ouvre cette liste précise, sans toucher aux autres listes ni à la sélection en cours
+  dashboardState.openIndexes.add(index)
+  if (arrow) arrow.style.transform = 'rotate(90deg)'
+
+  const statusBills = filteredBills(bills, getStatus(index))
+
+  if (container) container.innerHTML = cards(statusBills)
+
+  statusBills.forEach(bill => {
+    const openBill = document.querySelector(`#open-bill${bill.id}`)
+    if (openBill) openBill.addEventListener('click', (e) => 
+      handleEditTicket(e, bill, bills, document, store, onNavigate))
+  })
+}
+
+/**
+ * Réinitialise l'état du dashboard (utile pour les tests)
+ */
+export const resetDashboardState = () => {
+  dashboardState = { 
+    openIndexes: new Set(), 
+    selectedBillId: undefined 
+  }
+}
+```
+
+
+### Explication du problème
+Lorsqu'une fiche était déjà ouverte et que je cliquais sur un ticket d'un autre statut (accepté ou refusé), celui-ci ne s'affichait pas : le ticket déjà ouvert se refermait bien, mais le nouveau ne s'ouvrait pas à sa place.
+
+Le bug venait de la logique de base du code : un seul état (counter) servait à piloter l'affichage de tous les types de fiches confondus, en alternant simplement entre deux comportements selon sa parité (pair/impair), sans jamais vérifier quel ticket était réellement concerné. Ainsi, quand je cliquais sur un ticket différent, le code repassait dans la même fonction et exécutait la branche "fermeture" prévue pour le ticket précédent, au lieu de détecter qu'il s'agissait d'une nouvelle sélection à afficher. Le compteur ne distinguait donc pas "je referme le ticket actuel" de "j'ouvre un ticket différent" : il se contentait d'alterner, ce qui ne fonctionnait que si l'utilisateur recliquait toujours sur le même ticket.
+
+Pour corriger ce comportement, j'ai remplacé cette logique de parité par un état explicite basé sur l'identité de l'élément concerné : selectedBillId pour savoir précisément quel ticket est ouvert, et un Set (openIndexes) pour gérer indépendamment l'ouverture de chaque section de statut. Chaque clic compare maintenant l'élément ciblé à l'état actuel, ce qui permet de distinguer clairement une fermeture (même ticket recliqué) d'un changement de sélection (ticket différent), et de garder plusieurs sections ouvertes en parallèle sans qu'elles interfèrent entre elles.
+
+
 
 

@@ -7,9 +7,8 @@ import Logout from "../../components/Logout.js"
 
 // State pour gérer l'état du dashboard
 let dashboardState = {
-  counter: undefined,
-  index: undefined,
-  id: undefined
+  openIndexes: new Set(),
+  selectedBillId: undefined //La sélection d'un ticket
 }
 
 /**
@@ -17,7 +16,7 @@ let dashboardState = {
  */
 export const filteredBills = (data, status) => {
   return (data && data.length) ?
-    data.filter(bill => {
+      data.filter(bill => {
       let selectCondition
 
       // En environnement Jest
@@ -51,7 +50,7 @@ export const card = (bill) => {
     <div class='bill-card' id='open-bill${bill.id}' data-testid='open-bill${bill.id}'>
       <div class='bill-card-name-container'>
         <div class='bill-card-name'> ${firstName} ${lastName} </div>
-        <span class='bill-card-grey'> ... </span>
+        <span class='bill-card-grey'> ${bill.email} </span>
       </div>
       <div class='name-price-container'>
         <span> ${bill.name} </span>
@@ -135,35 +134,33 @@ export const handleClickIconEye = (document) => {
  * Exported for testing purposes
  */
 export const handleEditTicket = (e, bill, bills, document, store, onNavigate) => {
-  if (dashboardState.counter === undefined || dashboardState.id !== bill.id) {
-    dashboardState.counter = 0
-  }
-  if (dashboardState.id === undefined || dashboardState.id !== bill.id) {
-    dashboardState.id = bill.id
-  }
+  const isSameBillAlreadyOpen = dashboardState.selectedBillId === bill.id
 
-  if (dashboardState.counter % 2 === 0) {
+  // Remet en couleur neutre toutes les cards avant de mettre en avant la bonne
     bills.forEach(b => {
       const el = document.querySelector(`#open-bill${b.id}`)
       if (el) el.style.background = '#0D5AE5'
     })
 
-    const billEl = document.querySelector(`#open-bill${bill.id}`)
-    if (billEl) billEl.style.background = '#2A2B35'
-
-    document.querySelector('.dashboard-right-container div').innerHTML = DashboardFormUI(bill)
-    document.querySelector('.vertical-navbar').style.height = '150vh'
-    dashboardState.counter++
-  } else {
-    const billEl = document.querySelector(`#open-bill${bill.id}`)
-    if (billEl) billEl.style.background = '#0D5AE5'
+  if (isSameBillAlreadyOpen) {
+    // Toggle : on referme le formulaire si on reclique sur le même ticket
+    dashboardState.selectedBillId = undefined
 
     document.querySelector('.dashboard-right-container div').innerHTML = `
       <div id="big-billed-icon" data-testid="big-billed-icon"> ${BigBilledIcon} </div>
     `
     document.querySelector('.vertical-navbar').style.height = '120vh'
-    dashboardState.counter++
+    return
   }
+
+  // Sélection d'un nouveau ticket
+  dashboardState.selectedBillId = bill.id
+
+  const billEl = document.querySelector(`#open-bill${bill.id}`)
+  if (billEl) billEl.style.background = '#2A2B35'
+
+  document.querySelector('.dashboard-right-container div').innerHTML = DashboardFormUI(bill)
+  document.querySelector('.vertical-navbar').style.height = '150vh'
 
   const iconEye = document.querySelector('#icon-eye-d')
   if (iconEye) iconEye.addEventListener('click', () => handleClickIconEye(document))
@@ -211,6 +208,9 @@ export const handleAcceptSubmit = (e, bill, document) => {
 
   const navbar = document.querySelector('.vertical-navbar')
   if (navbar) navbar.style.height = '120vh'
+
+  dashboardState.selectedBillId = undefined
+
   // Note: updateBill appelée par le code appelant
   return newBillAccept
 }
@@ -244,6 +244,8 @@ export const handleRefuseSubmit = (e, bill, document) => {
   const navbar = document.querySelector('.vertical-navbar')
   if (navbar) navbar.style.height = '120vh'
 
+  dashboardState.selectedBillId = undefined
+
   // Note: updateBill appelée par le code appelant
   return newBillRefuse
 }
@@ -254,38 +256,31 @@ export const handleRefuseSubmit = (e, bill, document) => {
  * Exported for testing purposes
  */
 export const handleShowTickets = (e, bills, index, document, store, onNavigate) => {
-  if (dashboardState.counter === undefined || dashboardState.index !== index) {
-    dashboardState.counter = 0
-  }
-  if (dashboardState.index === undefined || dashboardState.index !== index) {
-    dashboardState.index = index
-  }
+  const isCurrentlyOpen = dashboardState.openIndexes.has(index)
+  const arrow = document.querySelector(`#arrow-icon${index}`)
+  const container = document.querySelector(`#status-bills-container${index}`)
 
-  if (dashboardState.counter % 2 === 0) {
-    const arrow = document.querySelector(`#arrow-icon${dashboardState.index}`)
+  if (isCurrentlyOpen) {
+    // On referme cette liste précise
+    dashboardState.openIndexes.delete(index)
     if (arrow) arrow.style.transform = 'rotate(0deg)'
-
-    document.querySelector(`#status-bills-container${dashboardState.index}`)
-      .innerHTML = cards(filteredBills(bills, getStatus(dashboardState.index)))
-
-    dashboardState.counter++
-  } else {
-    const arrow = document.querySelector(`#arrow-icon${dashboardState.index}`)
-    if (arrow) arrow.style.transform = 'rotate(90deg)'
-
-    document.querySelector(`#status-bills-container${dashboardState.index}`)
-      .innerHTML = ""
-
-    dashboardState.counter++
+    if (container) container.innerHTML = ""
+    return
   }
 
-  bills.forEach(bill => {
+  // On ouvre cette liste précise, sans toucher aux autres listes ni à la sélection en cours
+  dashboardState.openIndexes.add(index)
+  if (arrow) arrow.style.transform = 'rotate(90deg)'
+
+  const statusBills = filteredBills(bills, getStatus(index))
+
+  if (container) container.innerHTML = cards(statusBills)
+
+  statusBills.forEach(bill => {
     const openBill = document.querySelector(`#open-bill${bill.id}`)
-    if (openBill) openBill.addEventListener('click', (e) =>
+    if (openBill) openBill.addEventListener('click', (e) => 
       handleEditTicket(e, bill, bills, document, store, onNavigate))
   })
-
-  return bills
 }
 
 /**
@@ -306,7 +301,6 @@ export const getBillsAllUsers = async (store) => {
       throw error
     }
   }
-  return []
 }
 
 /**
@@ -330,9 +324,8 @@ export const updateBill = async (bill, store) => {
  * Réinitialise l'état du dashboard (utile pour les tests)
  */
 export const resetDashboardState = () => {
-  dashboardState = {
-    counter: undefined,
-    index: undefined,
-    id: undefined
+  dashboardState = { 
+    openIndexes: new Set(), 
+    selectedBillId: undefined 
   }
 }
