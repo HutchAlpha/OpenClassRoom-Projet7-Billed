@@ -18,7 +18,7 @@ export const filteredBills = (data, status) => {
   return (data && data.length) ?
       data.filter(bill => {
       let selectCondition
-
+      
       // En environnement Jest
       if (typeof jest !== 'undefined') {
         selectCondition = (bill.status === status)
