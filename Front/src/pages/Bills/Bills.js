@@ -31,7 +31,7 @@ export const initBillsPage = ({ document, onNavigate, store, localStorage }) => 
 /**
  * Gère le clic sur l'icône oeil - Ouvre la modale avec l'image
  */
-const handleClickIconEye = (icon, document) => {
+export const handleClickIconEye = (icon, document) => {
   const billUrl = icon.getAttribute("data-bill-url")
   const modaleFile = document.querySelector('#modaleFile')
   const modal = new bootstrap.Modal(modaleFile)

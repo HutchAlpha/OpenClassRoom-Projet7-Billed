@@ -25,7 +25,10 @@ describe("Given I am connected as an employee", () => {
       window.onNavigate(ROUTES_PATH.Bills)
       await waitFor(() => screen.getByTestId('icon-window'))
       const windowIcon = screen.getByTestId('icon-window')
-      //to-do write expect expression
+      
+      //! Correction du test pour vérifier si l'icône est active
+      expect(windowIcon.classList.contains("active-icon")).toBe(true)
+      
     })
     test("Then bills should be ordered from earliest to latest", () => {
       document.body.innerHTML = BillsUI({ data: bills })
@@ -34,5 +37,20 @@ describe("Given I am connected as an employee", () => {
       const datesSorted = [...dates].sort(antiChrono)
       expect(dates).toEqual(datesSorted)
     })
+
+/*
+navigation vers NewBill ;
+
+clic sur une icône œil ;
+
+ouverture de la modale ;
+
+ajout de l’image du justificatif ;
+
+initialisation de Logout.
+*/
+
+    test("clic sur le bouton « Nouvelle note de frais")
+    const buttonNewBill = document.querySelector(`button[data-testid="btn-new-bill"]`)
   })
 })

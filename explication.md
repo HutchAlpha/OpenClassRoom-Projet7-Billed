@@ -708,6 +708,20 @@ Le bug venait de la logique de base du code : un seul état (counter) servait à
 
 Pour corriger ce comportement, j'ai remplacé cette logique de parité par un état explicite basé sur l'identité de l'élément concerné : selectedBillId pour savoir précisément quel ticket est ouvert, et un Set (openIndexes) pour gérer indépendamment l'ouverture de chaque section de statut. Chaque clic compare maintenant l'élément ciblé à l'état actuel, ce qui permet de distinguer clairement une fermeture (même ticket recliqué) d'un changement de sélection (ticket différent), et de garder plusieurs sections ouvertes en parallèle sans qu'elles interfèrent entre elles.
 
+-----------------------------------------------------------------------------------------------------------------------------
+#### Tests a corriger
 
+composant page/Bills : Ajout de expect
 
+# Avant
+```js
+const handleClickIconEye = (icon, document) => {
+```
+# Après 
+```js
+export const handleClickIconEye = (icon, document) => {
+```
 
+__tests__/Bills
+
+Voir commentaires en //! rouges
