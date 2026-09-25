@@ -4,6 +4,7 @@
 
 import { screen, waitFor } from "@testing-library/dom"
 import BillsUI from "../pages/Bills/BillsUI.js"
+import { initBillsPage, getBills} from "../pages/Bills/Bills.js"
 import { bills } from "../fixtures/bills.js"
 import { ROUTES_PATH } from "../constants/routes.js";
 import { localStorageMock } from "../__mocks__/localStorage.js";
@@ -38,19 +39,57 @@ describe("Given I am connected as an employee", () => {
       expect(dates).toEqual(datesSorted)
     })
 
-/*
-navigation vers NewBill ;
+      test("clic sur le bouton « Nouvelle note de frais »", () => {
+        document.body.innerHTML = BillsUI({ data: bills })
+        
+        // Mock de la fonction onNavigate
+        const onNavigate = jest.fn()
 
-clic sur une icône œil ;
+        initBillsPage({document,onNavigate,store: {},localStorage: localStorageMock,})
 
-ouverture de la modale ;
+        const buttonNewBill = document.querySelector('button[data-testid="btn-new-bill"]')
 
-ajout de l’image du justificatif ;
+        buttonNewBill.click()
 
-initialisation de Logout.
-*/
+        expect(onNavigate).toHaveBeenCalledWith(ROUTES_PATH.NewBill)
+    })
 
-    test("clic sur le bouton « Nouvelle note de frais")
-    const buttonNewBill = document.querySelector(`button[data-testid="btn-new-bill"]`)
+    test("clic sur une icône œil : ouvre le justificatif", () => {
+      document.body.innerHTML = BillsUI({ data: bills })
+
+      const iconEye = document.querySelector('div[data-testid="icon-eye"]')
+      expect(iconEye).not.toBeNull()
+
+      const billUrl = iconEye.getAttribute("data-bill-url")
+      const modaleFile = document.querySelector("#modaleFile")
+      expect(modaleFile).not.toBeNull()
+
+      const show = jest.fn(() => {
+        modaleFile.dispatchEvent(new Event("shown.bs.modal"))
+      })
+
+      global.bootstrap = {
+        Modal: jest.fn(() => ({ show })),
+      }
+
+      initBillsPage({document,onNavigate: jest.fn(),store: {},localStorage: localStorageMock,})
+
+      iconEye.click()
+
+      expect(global.bootstrap.Modal).toHaveBeenCalledWith(modaleFile)
+      expect(show).toHaveBeenCalled()
+      expect(modaleFile.querySelector(".modal-body img").getAttribute("src"))
+        .toBe(billUrl)
+    })
+
+    test("récupère les bills depuis le store", async () => {
+      const mockStore = {
+        bills: jest.fn(() => ({
+          list: jest.fn(() => Promise.resolve(bills)),
+        })),
+      }
+
+      expect(await getBills(mockStore)).toEqual(bills)
+    })
   })
 })
