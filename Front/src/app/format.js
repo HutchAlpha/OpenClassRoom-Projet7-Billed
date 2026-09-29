@@ -10,10 +10,10 @@ export const formatDate = (dateStr) => {
 export const formatStatus = (status) => {
   switch (status) {
     case "pending":
-      return "En attente"
+      return "pending"
     case "accepted":
-      return "Accepté"
+      return "accepted"
     case "refused":
-      return "Refusé"
+      return "refused"
   }
 }

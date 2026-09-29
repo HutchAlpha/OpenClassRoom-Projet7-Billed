@@ -8,7 +8,7 @@ import { initBillsPage, getBills} from "../pages/Bills/Bills.js"
 import { bills } from "../fixtures/bills.js"
 import { ROUTES_PATH } from "../constants/routes.js";
 import { localStorageMock } from "../__mocks__/localStorage.js";
-
+import { formatDate } from "../app/format.js"
 import router from "../app/Router.js";
 
 describe("Given I am connected as an employee", () => {
@@ -82,14 +82,21 @@ describe("Given I am connected as an employee", () => {
         .toBe(billUrl)
     })
 
-    test("récupère les bills depuis le store", async () => {
-      const mockStore = {
-        bills: jest.fn(() => ({
-          list: jest.fn(() => Promise.resolve(bills)),
-        })),
-      }
+  test("récupère les bills depuis le store", async () => {
+  const mockStore = {
+    bills: jest.fn(() => ({
+      list: jest.fn(() => Promise.resolve(bills)),
+    })),
+  }
 
-      expect(await getBills(mockStore)).toEqual(bills)
-    })
+  const result = await getBills(mockStore)
+
+  const expectedBills = bills.map((bill) => ({
+    ...bill,
+    date: formatDate(bill.date),
+  }))
+
+  expect(result).toEqual(expectedBills)
+})
   })
 })
