@@ -47,4 +47,22 @@ describe('Given I am connected', () => {
       expect(screen.getByText('Administration')).toBeTruthy()
     })
   })
+
+  test("ne plante pas si le bouton de déconnexion est absent", () => {
+    document.body.innerHTML = ''
+
+    const onNavigate = jest.fn()
+    const localStorageMock = { clear: jest.fn() }
+
+    expect(() => {
+      new Logout({
+        document,
+        onNavigate,
+        localStorage: localStorageMock,
+      })
+    }).not.toThrow() //! s’exécute sans lancer d’erreur
+
+    expect(localStorageMock.clear).not.toHaveBeenCalled()
+    expect(onNavigate).not.toHaveBeenCalled()
+  })
 })
