@@ -25,7 +25,7 @@ export const initNewBillPage = ({ document, onNavigate, store, localStorage }) =
 /**
  * Gère le changement de fichier (upload)
  */
-const handleChangeFile = (e, { store, localStorage }) => {
+export const handleChangeFile = (e, { store, localStorage }) => {
   e.preventDefault()
 
   const file = document.querySelector(`input[data-testid="file"]`).files[0]
@@ -69,7 +69,7 @@ const handleChangeFile = (e, { store, localStorage }) => {
 /**
  * Gère la soumission du formulaire
  */
-const handleSubmit = (e, { onNavigate, store, localStorage }) => {
+export const handleSubmit = (e, { onNavigate, store, localStorage }) => {
   e.preventDefault()
 
   const email = JSON.parse(localStorage.getItem("user")).email

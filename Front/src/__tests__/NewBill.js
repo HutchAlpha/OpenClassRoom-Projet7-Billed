@@ -4,7 +4,8 @@
 
 import { screen } from "@testing-library/dom"
 import NewBillUI from "../pages/NewBill/NewBillUI.js"
-import { initNewBillPage } from "../pages/NewBill/NewBill.js"
+import { initNewBillPage, handleChangeFile, handleSubmit, resetBillFileState } from "../pages/NewBill/NewBill.js"
+import { ROUTES_PATH } from "../constants/routes.js"
 
 describe("Given I am connected as an employee", () => {
   describe("When I am on NewBill Page", () => {
@@ -57,30 +58,98 @@ describe("Given I am connected as an employee", () => {
     })
   })
 
-  test("Vérifie que la fonction initNewBillPage est appelée", () => {
-    document.body.innerHTML = NewBillUI()
+  describe("Lorsque la fonction initNewBillPage est appelée", () => {
+    test("Alors la page doit être correctement initialisée", () => {
+      document.body.innerHTML = NewBillUI()
 
-    const onNavigate = jest.fn()
-    const store = {
-      bills: jest.fn()
-    }
+      const onNavigate = jest.fn()
+
+      const store = {
+        bills: jest.fn()
+      }
+
+      const localStorage = {
+        getItem: jest.fn()
+      }
+
+      expect(() => {
+        initNewBillPage({document,onNavigate,store,localStorage})
+      }).not.toThrow()
+
+      const formulaireNouvelleNote = document.querySelector(
+        'form[data-testid="form-new-bill"]'
+      )
+
+      const champFichier = document.querySelector(
+        'input[data-testid="file"]'
+      )
+
+      expect(formulaireNouvelleNote).toBeTruthy()
+      expect(champFichier).toBeTruthy()
+    })
+  })
+
+
+describe("Lorsque handleChangeFile est appelée", () => {
+  beforeEach(() => {
+    resetBillFileState()
+    document.body.innerHTML = NewBillUI()
+  })
+
+  test("Alors un fichier image valide est uploadé dans le store", async () => {
+    const fileInput = document.querySelector(
+      `input[data-testid="file"]`
+    )
+
+    const mockFile = new File(
+      ["image"],
+      "test-image.jpg",
+      { type: "image/jpeg" }
+    )
+
+    Object.defineProperty(fileInput, "files", {
+      value: [mockFile],
+      configurable: true
+    })
 
     const localStorage = {
-      getItem: jest.fn()
+      getItem: jest.fn(() =>
+        JSON.stringify({ email: "test@mock.com" })
+      )
     }
 
-    expect(() => {
-      initNewBillPage({document,onNavigate,store,localStorage})}).not.toThrow()
-
-    const formNewBill = document.querySelector(
-      'form[data-testid="form-new-bill"]'
+    const create = jest.fn(() =>
+      Promise.resolve({
+        fileUrl: "https://example.com/test-image.jpg",
+        key: "12345"
+      })
     )
 
-    const fileInput = document.querySelector(
-      'input[data-testid="file"]'
-    )
+    const store = {
+      bills: jest.fn(() => ({
+        create
+      }))
+    }
 
-    expect(formNewBill).toBeTruthy()
-    expect(fileInput).toBeTruthy()
+    const e = {
+      preventDefault: jest.fn(),
+      target: {
+        value: "C:\\fakepath\\test-image.jpg"
+      }
+    }
+
+    expect(fileInput.files[0].name).toBe("test-image.jpg")
+    expect(fileInput.files[0].type).toBe("image/jpeg")
+    expect(fileInput.files[0]).toBeInstanceOf(File)
+
+    await handleChangeFile(e, { store, localStorage })
+
+    expect(e.preventDefault).toHaveBeenCalled()
+    expect(store.bills).toHaveBeenCalledTimes(1)
+    expect(create).toHaveBeenCalledTimes(1)
   })
 })
+
+
+})
+
