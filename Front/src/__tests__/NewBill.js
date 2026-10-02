@@ -96,9 +96,7 @@ describe("Lorsque handleChangeFile est appelée", () => {
     document.body.innerHTML = NewBillUI()
   })
 
-  test(
-    "Alors un fichier image valide est uploadé dans le store",
-    async () => {
+  test("Alors un fichier image valide est uploadé dans le store",async () => {
       const fileInput = document.querySelector(
         `input[data-testid="file"]`
       )
@@ -160,9 +158,7 @@ describe("Lorsque handleChangeFile est appelée", () => {
     }
   )
 
-  test(
-    "Alors un fichier non image est refusé et n'est pas uploadé",
-    () => {
+  test("Alors un fichier non image est refusé et n'est pas uploadé",() => {
       const fileInput = document.querySelector(
         `input[data-testid="file"]`
       )
@@ -218,5 +214,112 @@ describe("Lorsque handleChangeFile est appelée", () => {
       alertSpy.mockRestore()
     }
   )
+
+
+  test("Alors une erreur d'upload est interceptée sans faire planter la page", async () => {
+      const consoleError = jest.spyOn(console, "error").mockImplementation(() => {})
+
+      const fileInput = document.querySelector('input[data-testid="file"]')
+      const file = new File(["image"], "facture.png", { type: "image/png" })
+      Object.defineProperty(fileInput, "files", {
+        value: [file],
+        configurable: true
+      })
+
+      const create = jest.fn(() => Promise.reject(new Error("upload error")))
+      const store = { bills: jest.fn(() => ({ create })) }
+      const localStorage = {
+        getItem: jest.fn(() => JSON.stringify({ email: "test@mock.com" }))
+      }
+      const e = {
+        preventDefault: jest.fn(),
+        target: { value: "C:\\fakepath\\facture.png" }
+      }
+
+      handleChangeFile(e, { store, localStorage })
+      await new Promise((resolve) => setTimeout(resolve, 0))
+
+      expect(create).toHaveBeenCalledTimes(1)
+      expect(consoleError).toHaveBeenCalled()
+
+      consoleError.mockRestore()
+    }
+  )
+
+describe("Lorsque handleSubmit est appelée", () => {
+  let form
+
+  const remplirFormulaire = ({name,amount,commentary}) => {
+      form.querySelector(
+        'input[data-testid="expense-name"]'
+      ).value = name
+
+      form.querySelector(
+        'input[data-testid="amount"]'
+      ).value = amount
+
+      form.querySelector(
+        'textarea[data-testid="commentary"]'
+      ).value = commentary
+    }
+
+  const buildDeps = () => {
+    const update = jest.fn(() =>
+      Promise.resolve()
+    )
+
+    const store = {
+      bills: jest.fn(() => ({
+        update
+      }))
+    }
+
+    const onNavigate = jest.fn()
+
+    const localStorage = {
+      getItem: jest.fn(() =>
+        JSON.stringify({ email: "test@mock.com" })
+      )
+    }
+
+    return {update,store,onNavigate,localStorage}
+  }
+
+  beforeEach(() => {
+    resetBillFileState()
+    document.body.innerHTML = NewBillUI()
+
+    form = document.querySelector(
+      'form[data-testid="form-new-bill"]'
+    )
+  })
+
+  test("Alors la note de frais est envoyée et on navigue vers Bills",async () => {
+      remplirFormulaire({
+        name: "Vol Paris Londres",
+        amount: "348",
+        commentary: "Un commentaire valide"
+      })
+
+      const {update,store,onNavigate,localStorage} = buildDeps()
+
+      const e = {
+        preventDefault: jest.fn(),
+        target: form
+      }
+
+      handleSubmit(e, {onNavigate,store,localStorage})
+
+      await Promise.resolve()
+
+      expect(e.preventDefault).toHaveBeenCalled()
+      expect(update).toHaveBeenCalledTimes(1)
+      expect(onNavigate).toHaveBeenCalledWith(
+        ROUTES_PATH["Bills"]
+      )
+    }
+  )
+})
+
 })
 })
