@@ -54,7 +54,6 @@ export const handleClickIconEye = (icon, document) => {
 export const getBills = async (store) => {
   if (!store) return
 
-  try {
     const snapshot = await store.bills().list()
 
     const bills = snapshot
@@ -68,7 +67,6 @@ export const getBills = async (store) => {
           }
         } catch (e) {
           // Si les données sont corrompues, on garde la date non formatée
-          console.log(e, 'for', doc)
           return {
             ...doc,
             date: doc.date,
@@ -77,10 +75,6 @@ export const getBills = async (store) => {
         }
       })
 
-    console.log('length', bills.length)
     return bills
-  } catch (error) {
-    console.error('Error fetching bills', error)
-    throw error
   }
 }

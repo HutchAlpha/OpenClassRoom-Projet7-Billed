@@ -216,7 +216,6 @@ Bills.js
         }
       } catch (e) {
         // Si les données sont corrompues, on garde la date non formatée
-        console.log(e, 'for', doc)
         return {
           ...doc,
           date: doc.date,
@@ -255,7 +254,6 @@ try {
         }
       } catch (e) {
         // Si les données sont corrompues, on garde la date non formatée
-        console.log(e, 'for', doc)
         return { 
           ...doc, 
           date: doc.date, 

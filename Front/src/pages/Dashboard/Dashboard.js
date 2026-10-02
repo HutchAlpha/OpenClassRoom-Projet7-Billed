@@ -89,10 +89,7 @@ export const getStatus = (index) => {
  * Initialise la page Dashboard - Attache les event listeners
  */
 export const initDashboardPage = ({ document, onNavigate, bills, localStorage, store }) => {
-  if (!document) {
-    console.log('Dashboard: document is MISSING')
-    return
-  }
+
 
   const arrowIcon1 = document.querySelector('#arrow-icon1')
   const arrowIcon2 = document.querySelector('#arrow-icon2')
@@ -314,7 +311,6 @@ export const updateBill = async (bill, store) => {
         .update({ data: JSON.stringify(bill), selector: bill.id })
       return updatedBill
     } catch (error) {
-      console.log(error)
       throw error
     }
   }

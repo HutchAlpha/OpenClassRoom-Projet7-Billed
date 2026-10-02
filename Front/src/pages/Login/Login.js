@@ -96,7 +96,6 @@ const createUser = (user, store) => {
         })
       })
       .then(() => {
-        console.log(`User with ${user.email} is created`)
         return login(user, store)
       })
   } else {
