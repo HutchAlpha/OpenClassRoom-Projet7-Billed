@@ -6,17 +6,13 @@ import { screen } from "@testing-library/dom"
 import NewBillUI from "../pages/NewBill/NewBillUI.js"
 import { initNewBillPage } from "../pages/NewBill/NewBill.js"
 
-
 describe("Given I am connected as an employee", () => {
   describe("When I am on NewBill Page", () => {
     test("Then the form should be rendered with all required fields", () => {
       const html = NewBillUI()
       document.body.innerHTML = html
 
-      // Verify form is present
       expect(screen.getByTestId("form-new-bill")).toBeTruthy()
-
-      // Verify all form fields are present
       expect(screen.getByTestId("expense-type")).toBeTruthy()
       expect(screen.getByTestId("expense-name")).toBeTruthy()
       expect(screen.getByTestId("datepicker")).toBeTruthy()
@@ -32,6 +28,7 @@ describe("Given I am connected as an employee", () => {
       document.body.innerHTML = html
 
       const submitButton = screen.getByText("Envoyer")
+
       expect(submitButton).toBeTruthy()
       expect(submitButton.type).toBe("submit")
     })
@@ -48,9 +45,8 @@ describe("Given I am connected as an employee", () => {
       document.body.innerHTML = html
 
       const expenseTypeSelect = screen.getByTestId("expense-type")
-      expect(expenseTypeSelect).toBeTruthy()
 
-      // Verify all expense type options are present
+      expect(expenseTypeSelect).toBeTruthy()
       expect(screen.getByText("Transports")).toBeTruthy()
       expect(screen.getByText("Restaurants et bars")).toBeTruthy()
       expect(screen.getByText("Hôtel et logement")).toBeTruthy()
@@ -59,5 +55,32 @@ describe("Given I am connected as an employee", () => {
       expect(screen.getByText("Equipement et matériel")).toBeTruthy()
       expect(screen.getByText("Fournitures de bureau")).toBeTruthy()
     })
+  })
+
+  test("Vérifie que la fonction initNewBillPage est appelée", () => {
+    document.body.innerHTML = NewBillUI()
+
+    const onNavigate = jest.fn()
+    const store = {
+      bills: jest.fn()
+    }
+
+    const localStorage = {
+      getItem: jest.fn()
+    }
+
+    expect(() => {
+      initNewBillPage({document,onNavigate,store,localStorage})}).not.toThrow()
+
+    const formNewBill = document.querySelector(
+      'form[data-testid="form-new-bill"]'
+    )
+
+    const fileInput = document.querySelector(
+      'input[data-testid="file"]'
+    )
+
+    expect(formNewBill).toBeTruthy()
+    expect(fileInput).toBeTruthy()
   })
 })
