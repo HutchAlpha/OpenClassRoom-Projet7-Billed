@@ -31,12 +31,13 @@ describe("Given I am connected as an employee", () => {
       expect(windowIcon.classList.contains("active-icon")).toBe(true)
       
     })
-    test("Then bills should be ordered from earliest to latest", () => {
+    test("Then bills should be ordered from most recent to oldest", () => {
       document.body.innerHTML = BillsUI({ data: bills })
       const dates = screen.getAllByText(/^(19|20)\d\d[- /.](0[1-9]|1[012])[- /.](0[1-9]|[12][0-9]|3[01])$/i).map(a => a.innerHTML)
-      const antiChrono = (a, b) => ((a < b) ? 1 : -1)
-      const datesSorted = [...dates].sort(antiChrono)
-      expect(dates).toEqual(datesSorted)
+      const expectedDates = [...bills]
+        .sort((a, b) => new Date(b.date) - new Date(a.date))
+        .map(bill => bill.date)
+      expect(dates).toEqual(expectedDates)
     })
 
       test("clic sur le bouton « Nouvelle note de frais »", () => {
@@ -85,16 +86,18 @@ describe("Given I am connected as an employee", () => {
       test("récupère les bills depuis le store", async () => {
       const mockStore = {
         bills: jest.fn(() => ({
-          list: jest.fn(() => Promise.resolve(bills)),
+            list: jest.fn(() => Promise.resolve([...bills])),
         })),
       }
 
+        const expectedBills = [...bills]
+          .sort((a, b) => new Date(b.date) - new Date(a.date))
+          .map((bill) => ({
+            ...bill,
+            date: formatDate(bill.date),
+            status: formatStatus(bill.status),
+          }))
       const result = await getBills(mockStore)
-
-      const expectedBills = bills.map((bill) => ({
-        ...bill,
-        date: formatDate(bill.date),
-      }))
 
       expect(result).toEqual(expectedBills)
     })

@@ -72,8 +72,6 @@ const handleChangeFile = (e, { store, localStorage }) => {
 const handleSubmit = (e, { onNavigate, store, localStorage }) => {
   e.preventDefault()
 
-    e.target.querySelector(`input[data-testid="datepicker"]`).value)
-
   const email = JSON.parse(localStorage.getItem("user")).email
 
   const bill = {

@@ -77,4 +77,3 @@ export const getBills = async (store) => {
 
     return bills
   }
-}
