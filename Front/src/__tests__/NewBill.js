@@ -246,6 +246,7 @@ describe("Lorsque handleChangeFile est appelée", () => {
     }
   )
 
+  
 describe("Lorsque handleSubmit est appelée", () => {
   let form
 
@@ -321,5 +322,126 @@ describe("Lorsque handleSubmit est appelée", () => {
   )
 })
 
+
+  describe("Test de validation des champs du formulaire", () => {
+  let form
+
+  const remplirFormulaire = ({ name, amount, commentary }) => {
+    form.querySelector(
+      'input[data-testid="expense-name"]'
+    ).value = name
+
+    form.querySelector(
+      'input[data-testid="amount"]'
+    ).value = amount
+
+    form.querySelector(
+      'textarea[data-testid="commentary"]'
+    ).value = commentary
+  }
+
+  const buildDeps = () => {
+    const update = jest.fn(() => Promise.resolve())
+
+    const store = {
+      bills: jest.fn(() => ({
+        update
+      }))
+    }
+
+    const onNavigate = jest.fn()
+
+    const localStorage = {
+      getItem: jest.fn(() =>
+        JSON.stringify({ email: "test@mock.com" })
+      )
+    }
+
+    return {
+      update,
+      store,
+      onNavigate,
+      localStorage
+    }
+  }
+
+  beforeEach(() => {
+    resetBillFileState()
+    document.body.innerHTML = NewBillUI()
+
+    form = document.querySelector(
+      'form[data-testid="form-new-bill"]'
+    )
+  })
+
+    test("Alors un nom de dépense vide déclenche une alerte", () => {
+      const {onNavigate,store,localStorage} = buildDeps()
+
+      const e = {
+        preventDefault: jest.fn(),
+        target: form
+      }
+
+      remplirFormulaire({
+        name: "",
+        amount: "100",
+        commentary: "Un commentaire valide"
+      })
+
+      window.alert = jest.fn()
+
+      handleSubmit(e, {onNavigate,store,localStorage})
+
+      expect(window.alert).toHaveBeenCalledWith(
+        "Veuillez saisir un nom de dépense"
+      )
+    })
+
+    test("Alors un montant négatif déclenche une alerte", () => {
+      const {onNavigate,store,localStorage} = buildDeps()
+
+      const e = {
+        preventDefault: jest.fn(),
+        target: form
+      }
+
+      remplirFormulaire({
+        name: "Vol Paris Londres",
+        amount: "-50",
+        commentary: "Un commentaire valide"
+      })
+
+      window.alert = jest.fn()
+
+      handleSubmit(e, {onNavigate,store,localStorage})
+
+      expect(window.alert).toHaveBeenCalledWith(
+        "Veuillez saisir un montant positif"
+      )
+    })
+
+    test("Alors un commentaire trop court déclenche une alerte", () => {
+      const {onNavigate,store,localStorage} = buildDeps()
+
+      const e = {
+        preventDefault: jest.fn(),
+        target: form
+      }
+
+      remplirFormulaire({
+        name: "Vol Paris Londres",
+        amount: "100",
+        commentary: "abc"
+      })
+
+      window.alert = jest.fn()
+
+      handleSubmit(e, {onNavigate,store,localStorage})
+
+      expect(window.alert).toHaveBeenCalledWith(
+        "Veuillez saisir un commentaire d'au moins 5 caractères"
+      )
+    })
+  })
 })
 })
