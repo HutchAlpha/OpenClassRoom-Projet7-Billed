@@ -111,6 +111,11 @@ export default () => {
       case ROUTES_PATH['Dashboard']:
         await renderDashboard(rootDiv)
         break
+        // J'ai ajouté ces deux cas pour gérer les pages d'erreur
+      case ROUTES_PATH['Erreur404']:
+      case ROUTES_PATH['Erreur500']:
+        rootDiv.innerHTML = ROUTES({ pathname })
+        break
       default:
         renderLogin(rootDiv)
     }
@@ -141,4 +146,3 @@ export default () => {
 
   return null
 }
-

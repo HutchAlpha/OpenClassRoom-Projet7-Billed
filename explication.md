@@ -1,10 +1,5 @@
 #### EXPLICATIONS DES CORRECTIFS ####
 
-Changement a faire : 
-
-- Pour Admin, ajouter ordre des dates
-- Ajouter des tests unitaires
-
 # Problème connexion Admin
 
 - Login.js
@@ -29,11 +24,12 @@ Changement a faire :
 ```
 
 ### Explication du problème
-Emplyee a été mis au lieu de user donc type été a null a cause de cela
+
+Emplyee a été mis au lieu de admin donc type était a null a cause de cela (il chercher les mauvaises informations)
 
 
 
-# Images trop grande par rapport a l'affichages (Employee)
+# Images trop grande par rapport a l'encadrement (Employee)
 
 - Bills.js
 
@@ -49,7 +45,7 @@ const handleClickIconEye = (icon, document) => {
 
   // Attendre que la modale soit visible pour calculer la largeur
   modaleFile.addEventListener('shown.bs.modal', () => {
-    const imgWidth = Math.floor(modaleFile.getBoundingClientRect().width * 0.5)
+    const imgWidth = Math.floor(modaleFile.getBoundingClientRect().width * 0.5) //ici
     modaleFile.querySelector(".modal-body").innerHTML =
       `<div style='text-align: center;' class="bill-proof-container">
         <img width=${imgWidth} src=${billUrl} alt="Bill" />
@@ -87,16 +83,17 @@ const handleClickIconEye = (icon, document) => {
 Le code original calculait la largeur de l'image avec :
 
 ```js
-const imgWidth = Math.floor(modaleFile.getBoundingClientRect().width * 0.5)
+const imgWidth = Math.floor(modaleFile.getBoundingClientRect().width * 0.5) 
 ```
 
-Le problème : `#modaleFile` est l'élément `.modal` de Bootstrap, c'est-à-dire l'**overlay plein écran** qui recouvre tout le viewport. `getBoundingClientRect().width` retourne donc la **largeur totale de l'écran**, et non celle du conteneur réel de la modale (`.modal-dialog.modal-lg`
+Le problème majeur : `#ModalFile` prennez la taille de l'overlay, donc pratiquement toute la largeur de l'écran. Maintenant l'imaghe prend la largeur maximum du conteneur de l'image. Donc elle ne peux plus dépasser
+
 
 En multipliant par 0.5, on obtenait 50% de la largeur de l'écran, ce qui pouvait dépasser la largeur réelle du `.modal-dialog`.
 
 
 
-# Images trop grande par rapport a l'affichages (Admin)
+# Images trop grande par rapport a l'encadrement (Admin)
 
 - Dashboard.js
 
@@ -110,7 +107,7 @@ export const handleClickIconEye = (document) => {
 
   // Attendre que la modale soit visible pour calculer la largeur
   modale.addEventListener('shown.bs.modal', () => {
-    const imgWidth = Math.floor(modale.getBoundingClientRect().width * 0.8)
+    const imgWidth = Math.floor(modale.getBoundingClientRect().width * 0.8) //ici
     modale.querySelector(".modal-body").innerHTML =
       `<div style='text-align: center;'><img width=${imgWidth} src=${billUrl} alt="Bill"/></div>`
   }, { once: true })
@@ -142,7 +139,7 @@ export const handleClickIconEye = (document) => {
 
 ### Explication
 
-Même problème que côté employee : `#modaleFileAdmin1` est l'élément `.modal` de Bootstrap (overlay plein écran), donc `getBoundingClientRect().width` retournait la largeur du viewport et non celle du `.modal-dialog`. L'image débordait du conteneur.
+Même problème que côté employee : `#modaleFileAdmin1` est l'élément `.modal` (overlay plein écran), donc `getBoundingClientRect().width` retournait la largeur du viewport et non celle du `.modal-dialog`. L'image débordait du conteneur.
 
 La solution est identique : utiliser des propriétés CSS responsives (`max-width: 100%`, `max-height: 80vh`, `height: auto`, `object-fit: contain`) au lieu d'une largeur fixe en pixels.
 
@@ -185,6 +182,7 @@ La solution est identique : utiliser des propriétés CSS responsives (`max-widt
 ### Explication du problème
 
 Le bouton pour voir le document n'a pas était mis pour le mode ADMIN
+
 
 # Bills non triées par date
 
