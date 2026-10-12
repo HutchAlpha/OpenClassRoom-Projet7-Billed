@@ -76,13 +76,9 @@ describe("Given I am connected as an employee", () => {
         initNewBillPage({document,onNavigate,store,localStorage})
       }).not.toThrow()
 
-      const formulaireNouvelleNote = document.querySelector(
-        'form[data-testid="form-new-bill"]'
-      )
+      const formulaireNouvelleNote = document.querySelector('form[data-testid="form-new-bill"]')
 
-      const champFichier = document.querySelector(
-        'input[data-testid="file"]'
-      )
+      const champFichier = document.querySelector('input[data-testid="file"]')
 
       expect(formulaireNouvelleNote).toBeTruthy()
       expect(champFichier).toBeTruthy()
@@ -97,9 +93,7 @@ describe("Lorsque handleChangeFile est appelée", () => {
   })
 
   test("Alors un fichier image valide est uploadé dans le store",async () => {
-      const fileInput = document.querySelector(
-        `input[data-testid="file"]`
-      )
+      const fileInput = document.querySelector(`input[data-testid="file"]`)
 
       const mockFile = new File(
         ["image"],
@@ -159,9 +153,7 @@ describe("Lorsque handleChangeFile est appelée", () => {
   )
 
   test("Alors un fichier non image est refusé et n'est pas uploadé",() => {
-      const fileInput = document.querySelector(
-        `input[data-testid="file"]`
-      )
+      const fileInput = document.querySelector(`input[data-testid="file"]`)
 
       const mockFile = new File(
         ["document"],
@@ -219,7 +211,7 @@ describe("Lorsque handleChangeFile est appelée", () => {
   test("Alors une erreur d'upload est interceptée sans faire planter la page", async () => {
       const consoleError = jest.spyOn(console, "error").mockImplementation(() => {})
 
-      const fileInput = document.querySelector('input[data-testid="file"]')
+      const fileInput = document.querySelector(`input[data-testid="file"]`)
       const file = new File(["image"], "facture.png", { type: "image/png" })
       Object.defineProperty(fileInput, "files", {
         value: [file],

@@ -61,10 +61,13 @@ describe("Given I am connected as an employee", () => {
       const iconEye = document.querySelector('div[data-testid="icon-eye"]')
       expect(iconEye).not.toBeNull()
 
+      //! Url de l'image de la facture
       const billUrl = iconEye.getAttribute("data-bill-url")
+      
       const modaleFile = document.querySelector("#modaleFile")
       expect(modaleFile).not.toBeNull()
 
+      //! Affichage de la modale pour l'image
       const show = jest.fn(() => {
         modaleFile.dispatchEvent(new Event("shown.bs.modal"))
       })

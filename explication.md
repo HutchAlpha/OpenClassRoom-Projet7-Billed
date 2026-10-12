@@ -422,7 +422,7 @@ Ajout d'une function isValidFileType dans handleChangeFile qui permet de filtrer
 Ajout de la sécurité côté Employee pour qu'il remplisses toutes les informations demandé, afin d'éviter a la RH de relancer le salarié avec des informations complémentaires ce qui évite de faire perdre du temps et donc de l'argent
 
 
-# Correction OnNavigate pour (Employee)
+# Correction OnNavigate pour (Employee) => Bouton sur le côté (menu)
 
 - Router.js
 
