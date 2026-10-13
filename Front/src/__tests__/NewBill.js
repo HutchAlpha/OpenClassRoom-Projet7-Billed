@@ -95,12 +95,14 @@ describe("Lorsque handleChangeFile est appelée", () => {
   test("Alors un fichier image valide est uploadé dans le store",async () => {
       const fileInput = document.querySelector(`input[data-testid="file"]`)
 
+      //! Simulation d'un fichier image valide
       const mockFile = new File(
         ["image"],
         "test-image.jpg",
         { type: "image/jpeg" }
       )
 
+      
       Object.defineProperty(fileInput, "files", {
         value: [mockFile],
         configurable: true
@@ -112,6 +114,7 @@ describe("Lorsque handleChangeFile est appelée", () => {
         )
       }
 
+      
       const create = jest.fn(() =>
         Promise.resolve({
           fileUrl: "https://example.com/test-image.jpg",

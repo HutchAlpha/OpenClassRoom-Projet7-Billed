@@ -63,6 +63,7 @@ describe("Given I am connected as an employee", () => {
 
       //! Url de l'image de la facture
       const billUrl = iconEye.getAttribute("data-bill-url")
+
       
       const modaleFile = document.querySelector("#modaleFile")
       expect(modaleFile).not.toBeNull()
